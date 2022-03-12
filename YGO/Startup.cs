@@ -8,6 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using YGO.Data;
+using Microsoft.EntityFrameworkCore;
+using YGO.Data.Services;
 
 namespace YGO
 {
@@ -23,6 +26,12 @@ namespace YGO
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //DbContext configuration
+            services.AddDbContext<AppDbContext>(option => option.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString")));
+
+            //Service configuration
+            services.AddScoped<IActorsService, ActorsService>();
+
             services.AddControllersWithViews();
         }
 
@@ -52,6 +61,9 @@ namespace YGO
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            //Seed database
+            AppDbInitializer.Seed(app);
         }
     }
 }
