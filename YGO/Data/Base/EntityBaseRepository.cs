@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,9 +20,11 @@ namespace YGO.Data.Base
             await appDbContext.Set<T>().AddAsync(entity);
         }
 
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var entity = await appDbContext.Set<T>().FirstOrDefaultAsync(item => item.Id == id);
+            EntityEntry entityEntry = appDbContext.Entry<T>(entity);
+            entityEntry.State = EntityState.Modified;
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
@@ -37,9 +40,10 @@ namespace YGO.Data.Base
             return result;
         }
 
-        public Task<T> UpdateAsync(int id, T entity)
+        public async Task UpdateAsync(int id, T entity)
         {
-            throw new NotImplementedException();
+            EntityEntry entityEntry = appDbContext.Entry<T>(entity);
+            entityEntry.State = EntityState.Modified;
         }
     }
 }
